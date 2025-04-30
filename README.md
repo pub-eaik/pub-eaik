@@ -11,11 +11,8 @@ Missing links, e.g., to the PyPI-repo, are in the following denoted as not avail
 ## Derivations on 1R, 2R, 3R, 4R and 5R Manipulators
 While all necessary derivations for 6R manipulators are either contained within our submitted paper, or the initial publication of [Elias et al.](#credits), the derivations needed for the subproblem decompositions for 1-5R manipulators are too lengthy to be contained within our paper.
 Instead, we outsource this information into the following [PDF](https://github.com/pub-eaik/pub-eaik/blob/webpage/PDFs/EAIK_extended_appendix.pdf): <br>
-<figure figcaption align="center">
-<a href="PDFs/EAIK_extended_appendix.pdf" class="image fit"><img align="right" src="Images/PDF_preview.png" alt="" width="40%"></a>
-<figcaption>
- Click to view PDF
-</figcatption>
+<figure align="center">
+<a href="PDFs/EAIK_extended_appendix.pdf" class="image"><img align="center" src="Images/PDF_preview.png" alt="" width="40%"></a>
 </figure>
 
 ## Overview
@@ -43,7 +40,7 @@ plug-and-play analytical IK within less than a millisecond.
 This software is available via our [Open-Source Implementation](https://github.com/pub-eaik/pub-eaik), and as a PyPI Package (available after review).
 
 <figure figcaption align="center">
-  <img width="70%" src="Images/Titlefigure.png"/>
+  <img align="center" width="70%" src="Images/Titlefigure.png"/>
   <figcaption>A robot with a spherical wrist and the geometric representation of a
 subproblem we use to solve parts of its IK. Red points indicate a unit offset
 along the corresponding joint axes from the intersection point. The circles
@@ -64,13 +61,14 @@ points of the two circles (black dots).
   </figcaption>
 </figure>
 
-The current implementation supports automatic derivation of solutions for the following 6R and 3R manipulators, as well as their mirrored version (switched base and endeffector).
+The current implementation supports automatic derivation of solutions for the following 6R and 5R manipulators, as well as their mirrored version (switched base and endeffector), and all non-redundant 1-4R manipulators.
 In addition, we allow the user to solve arbitrary nR manipulators that, by locking individual joints, corrspond to one of the below kinematic families.
 
 <br>
 <figure figcaption align="center">
   <img src="Images/Kinematic_types.png"/>
-  <figcaption>Robot configurations (without their mirrored version) that can be solved by the current EAIK implementation. NR-Robots that contain these structures as kinematic subchains are solvable if the leftover redundant joints are locked in place. </figcaption>
+  <figcaption>Robot configurations (without their mirrored version) that can be solved by the current EAIK implementation. NR-Robots that contain these structures as kinematic subchains are solvable if the leftover redundant joints are locked in place.
+  For the 5R manipulators, all (non-redundant) specializations of the shown classes (i.e., with additional intersecting/parallel axes) are solvable as well.</figcaption>
 </figure>
 
 <br>
