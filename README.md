@@ -61,13 +61,14 @@ points of the two circles (black dots).
   </figcaption>
 </figure>
 
-The current implementation supports automatic derivation of solutions for the following 6R and 3R manipulators, as well as their mirrored version (switched base and endeffector).
+The current implementation supports automatic derivation of solutions for the following 6R and 5R manipulators, as well as their mirrored version (switched base and endeffector), and all non-redundant 1-4R manipulators.
 In addition, we allow the user to solve arbitrary nR manipulators that, by locking individual joints, corrspond to one of the below kinematic families.
 
 <br>
 <figure figcaption align="center">
   <img src="Images/Kinematic_types.png"/>
-  <figcaption>Robot configurations (without their mirrored version) that can be solved by the current EAIK implementation. NR-Robots that contain these structures as kinematic subchains are solvable if the leftover redundant joints are locked in place. </figcaption>
+  <figcaption>Robot configurations (without their mirrored version) that can be solved by the current EAIK implementation. NR-Robots that contain these structures as kinematic subchains are solvable if the leftover redundant joints are locked in place.
+  For the 5R manipulators, all (non-redundant) specializations of the shown classes (i.e., with additional intersecting/parallel axes) are solvable as well.</figcaption>
 </figure>
 
 <br>
