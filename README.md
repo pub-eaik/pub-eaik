@@ -10,9 +10,12 @@ Missing links, e.g., to the PyPI-repo, are in the following denoted as not avail
 
 ## Derivations on 1R, 2R, 3R, 4R and 5R Manipulators
 While all necessary derivations for 6R manipulators are either contained within our submitted paper, or the initial publication of [Elias et al.](#credits), the derivations needed for the subproblem decompositions for 1-5R manipulators are too lengthy to be contained within our paper.
-Instead, we outsource this information into the following PDF:<br>
-<figure align="center"> 
-<a href="/PDFs/EAIK_extended_appendix.pdf" class="image fit"><img src="Images/PDF_preview.png" alt="" width="40%"></a>
+Instead, we outsource this information into the following [PDF](https://github.com/pub-eaik/pub-eaik/blob/webpage/PDFs/EAIK_extended_appendix.pdf): <br>
+<figure figcaption align="center">
+<a href="PDFs/EAIK_extended_appendix.pdf" class="image fit"><img align="right" src="Images/PDF_preview.png" alt="" width="40%"></a>
+<figcaption>
+ Click to view PDF
+</figcatption>
 </figure>
 
 ## Overview
