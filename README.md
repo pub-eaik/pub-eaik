@@ -8,13 +8,6 @@ The full website will be publicly accessible after the review process.
 
 Missing links, e.g., to the PyPI-repo, are in the following denoted as not available until after the review process. 
 
-## Derivations on 1R, 2R, 3R, 4R and 5R Manipulators
-While all necessary derivations for 6R manipulators are either contained within our submitted paper, or the initial publication of [Elias et al.](#credits), the derivations needed for the subproblem decompositions for 1-5R manipulators are too lengthy to be contained within our paper.
-Instead, we outsource this information into the following [PDF](https://github.com/pub-eaik/pub-eaik/blob/webpage/PDFs/EAIK_extended_appendix.pdf): <br>
-<figure align="center">
-<a href="PDFs/EAIK_extended_appendix.pdf" class="image"><img align="center" src="Images/PDF_preview.png" alt="" width="40%"></a>
-</figure>
-
 ## Overview
 Calculating the inverse kinematics (IK) is fundamental for motion planning in robotics. Compared to numerical
 or learning-based approaches, analytical IK provides higher
@@ -72,6 +65,7 @@ In addition, we allow the user to solve arbitrary nR manipulators that, by locki
 </figure>
 
 <br>
+
 We implement an user friendly interface for parametrizing a robot by a URDF file, DH parameters, or simply the homogeneous transformations that correspond to the joint axes placements.
 
 The following figure shows an overview of our interface and a superficial showcase of our method:
@@ -81,6 +75,13 @@ The following figure shows an overview of our interface and a superficial showca
 </figure>
 
 If you require a vast amount of IK problems to be computed at once, we also implement a multithreaded batched version that allows you to make full use of your processor.
+
+## Derivations on 1R, 2R, 3R, 4R and 5R Manipulators
+While all necessary derivations for 6R manipulators are either contained within our submitted paper, or the initial publication of [Elias et al.](#credits), the derivations needed for the subproblem decompositions for 1-5R manipulators are too lengthy to be contained within our paper.
+Instead, we outsource this information into the following [PDF](https://github.com/pub-eaik/pub-eaik/blob/webpage/PDFs/EAIK_extended_appendix.pdf): <br>
+<figure align="center">
+<a href="PDFs/EAIK_extended_appendix.pdf" class="image"><img align="center" src="Images/PDF_preview.png" alt="" width="40%"></a>
+</figure>
 
 ## Installation
 ## Dependencies and Installation
