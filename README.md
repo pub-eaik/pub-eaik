@@ -10,9 +10,9 @@ Missing links, e.g., to the PyPI-repo, are in the following denoted as not avail
 
 ## Derivations on 1R, 2R, 3R, 4R and 5R Manipulators
 While all necessary derivations for 6R manipulators are either contained within our submitted paper, or the initial publication of [Elias et al.](#credits), the derivations needed for the subproblem decompositions for 1-5R manipulators are too lengthy to be contained within our paper.
-Instead, we outsource this information into the following PDF:<br>
-<figure align="center"> 
-<a href="/PDFs/EAIK_extended_appendix.pdf" class="image fit"><img src="Images/PDF_preview.png" alt="" width="40%"></a>
+Instead, we outsource this information into the following [PDF](https://github.com/pub-eaik/pub-eaik/blob/webpage/PDFs/EAIK_extended_appendix.pdf): <br>
+<figure align="center">
+<a href="PDFs/EAIK_extended_appendix.pdf" class="image"><img align="center" src="Images/PDF_preview.png" alt="" width="40%"></a>
 </figure>
 
 ## Overview
@@ -40,7 +40,7 @@ plug-and-play analytical IK within less than a millisecond.
 This software is available via our [Open-Source Implementation](https://github.com/pub-eaik/pub-eaik), and as a PyPI Package (available after review).
 
 <figure figcaption align="center">
-  <img width="70%" src="Images/Titlefigure.png"/>
+  <img align="center" width="70%" src="Images/Titlefigure.png"/>
   <figcaption>A robot with a spherical wrist and the geometric representation of a
 subproblem we use to solve parts of its IK. Red points indicate a unit offset
 along the corresponding joint axes from the intersection point. The circles
