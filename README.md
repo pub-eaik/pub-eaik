@@ -46,14 +46,6 @@ points of the two circles (black dots).
 
 <br>
 
-<figure figcaption align="center">
-  <img src="Images/SP_Visualization.png"/>
-  <figcaption>Geometrical correspondences of the first two subproblems on the example of a simple planar manipulator.
-  This figure aims to emphasize the geometric meaning and does not showcase how the subproblems are applied in reality.
-  Coplanar axes can pose an issue when combined with subproblem 2 if not accounted for.
-  </figcaption>
-</figure>
-
 The current implementation supports automatic derivation of solutions for the following 6R and 5R manipulators, as well as their mirrored version (switched base and endeffector), and all non-redundant 1-4R manipulators.
 In addition, we allow the user to solve arbitrary nR manipulators that, by locking individual joints, corrspond to one of the below kinematic families.
 
@@ -236,6 +228,48 @@ void main()
 ```
 
 Again, if you are stuck somewhere or have open questions feel free to reach out to us.
+
+## Solution-Consistency at Workspace Boundaries
+In the following experiment we compare the consistency of our method in the proximity of workspace Boundaries to that of IKFast.
+While [Elias et al.](#credits) already showed similar experiments on the example of the ABB IRB 6640 manipulator [in this Video](https://www.youtube.com/watch?v=XS1EA3Nls_k), an explicit comparison to IKFast further emphasizes the benefit in using our method for automatic decomposition alongside their stable subproblem solutions.
+We do this by the example of the Schunk Powerball LWA-4P manipulator - a modularizable 6R manipulator with a spherical wrist and two consecutive intersecting axes in the base.
+
+We follow a trajectory which starts in a feasible end effector position (0m, -0.001m, 0.5m), goes to a point outside the manipulator's workspace (0m, -0.001m, 1.0m) and then goes back to the starting position (0m, -0.001m, 0.5m). We sample 100 equidistant points from this trajectory and compute IK solutions via both IKFast and our method (EAIK).
+The end effector orientation is commanded to be constant throughout the whole trajectory (identity matrix).<br>
+**Note: While our method succeeds in computing the desired points without the slight offset in the y-direction (1mm), IKFast completely fails to yield any solution when dropping this offset, such that the commanded positions (approximatively) reach a singular configuration.**
+
+The following animations show a simplified LWA-4P model that follows our desired trajectory. Blue errors resemble the joint axes of the manipulator, while the pink bars resemble its links.
+Green points represent the commanded positions while exiting the workspace, while red points represent the commanded positions when re-entering the manipulator's workspace (100 points in total).
+Next to each animation, we also display the joint trajectories as well as the desired and actual end effector positions.
+**If no feasible solution is obtained from the IK solver, the model disappears (Only for IKFast).**
+
+As both approaches yield multiple feasible solutions, we select the solution which is closest in joint space to the previous solution. 
+
+#### EAIK: Schunk LWA-4P Workspace Boundaries
+<figure figcaption align="center">
+  <img width="60%" src="Images/Eaik_wsb_animation.gif"/>
+</figure>
+ The animation above illustrates the movements when using our method (EAIK). 
+ We obtain valid joint angles even when commanding poses outside of the manipulator's workspace. There is no timestep where the IK solutions of our method are not properly defined - even during singular configurations.
+ The joint trajectories, as well as the commanded and executed end effector positions, are displayed in the graphs below.
+ Even when the manipulator reaches its workspace boundary, our method returns feasible least-squares solutions.
+<figure figcaption align="center">
+  <img src="Images/EAIK_wsb_plot.png"/>
+</figure>
+
+
+#### IKFast: Schunk LWA-4P Workspace Boundaries
+<figure figcaption align="center">
+  <img width="60%" src="Images/IKFast_wsb_animation.gif"/>
+</figure>
+The animation above illustrates the movements we obtain when using IKFast. 
+IKFast fails to yield any feasible solution when commanding positions outside the workspace/if the robot is in a singular configuration. 
+The manipulator-model disappears for all such commanded points in the animation and reappears once a feasible solution is obtained again.
+The joint trajectories, as well as the commanded and executed end effector positions, are displayed in the graphs below.
+Once the manipulator reaches its workspace boundary, IKFast returns no solution - the joint trajectories become discontinuous.
+<figure figcaption align="center">
+  <img src="Images/IKFast_wsb_plot.png"/>
+</figure>
 
 ## Performance
 >**_NOTE:_** All of the following experiments were conducted on a computer with an AMD Ryzen 7 8-core processor and 64GB of DDR4 memory within Ubuntu 22.04.
