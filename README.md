@@ -46,14 +46,6 @@ points of the two circles (black dots).
 
 <br>
 
-<figure figcaption align="center">
-  <img src="Images/SP_Visualization.png"/>
-  <figcaption>Geometrical correspondences of the first two subproblems on the example of a simple planar manipulator.
-  This figure aims to emphasize the geometric meaning and does not showcase how the subproblems are applied in reality.
-  Coplanar axes can pose an issue when combined with subproblem 2 if not accounted for.
-  </figcaption>
-</figure>
-
 The current implementation supports automatic derivation of solutions for the following 6R and 5R manipulators, as well as their mirrored version (switched base and endeffector), and all non-redundant 1-4R manipulators.
 In addition, we allow the user to solve arbitrary nR manipulators that, by locking individual joints, corrspond to one of the below kinematic families.
 
@@ -236,6 +228,72 @@ void main()
 ```
 
 Again, if you are stuck somewhere or have open questions feel free to reach out to us.
+
+## Solution-Consistency at Workspace Boundaries and Singularities
+In the following experiments we compare the consistency of our method in the proximity of workspace Boundaries to that of IKFast.
+While [Elias et al.](#credits) already showed similar experiments,e.g., in their Figure 4 and 5, or on the example of the ABB IRB 6640 manipulator [in this Video](https://www.youtube.com/watch?v=XS1EA3Nls_k), an explicit comparison to IKFast further emphasizes the benefit in using our method for automatic decomposition alongside their stable subproblem solutions.
+We do this by the example of the Schunk Powerball LWA-4P manipulator—a modularizable 6R manipulator with a spherical wrist and two consecutive intersecting axes in its base.
+
+#### Experiment 1
+For the first experiment, we consider a linear end-effector trajectory reaching from a start position of (x, y, z) = (0m, 0m, 0.5m) to an end position (x, y, z) = (0m, 0m, 1.0m) and back. 
+We align the orientation of the end effector with that of the base of the robot and keep it constant throughout the whole trajectory. <br>
+
+In this example, all points along the trajectory with a z-coordinate smaller than or equal to 0.8m are reachable by the manipulator (neglecting joint limits and self-collisions). However, the first and last axis of the LWA-4P are collinear at every point along this trajectory—the manipulator is always in a singular configuration. Hence,
+infinitely many IK solutions exist for each point along this trajectory with z ≤ 0.8m. On the other hand, all points with a z-coordinate larger than 0.8m are placed outside the workspace of the manipulator—no IK solution exists for any of these points. We sample 100 discrete points along this trajectory and try to compute the IK solution for each point. We obtain the following results:
+
+* When using IKFast, we get no solution at all for any point along this trajectory. Consequently, we can neither visualize the joint trajectories nor an animation of the manipulator following any obtained solutions.
+* When using our method (EAIK), we obtain at least one IK solution for any point along the trajectory.
+For points where z ≤ 0.8m, this solution is analytically correct with an error in the magnitude of double-precision accuracy. For points where z > 0.8m, this solution is a least-squares solution to the underlying
+subproblems as discussed in our manuscript under Section IV-B. We linearly interpolate between the
+discrete samples in joint space to obtain the joint trajectories in the following figure. While the solutions
+to the subproblems in [Elias et al.](#credits) are unable to represent the full infinite solution space that arises from singular
+configurations, they still yield at least one consistent and analytically accurate solution.<br>
+The following animation shows a simplified LWA-4P model that executes the IK solutions obtained via our method (EAIK). Blue arrows resemble the joint axes of the manipulator, while the pink bars resemble its links.
+Green points represent the commanded positions while exiting the workspace, while red points represent the commanded positions when re-entering the manipulator's workspace (100 points in total).
+
+<figure figcaption align="center">
+  <img width="60%" src="Images/Eaik_wsb_animation.gif"/>
+</figure>
+
+When using our method (EAIK), we obtain sensible joint angles even when commanding poses outside of the workspace of the manipulator or during singular configurations.
+When the manipulator reaches its workspace boundary, our method returns feasible least-squares solutions. 
+The figure below visualizes the obtained joint trajectories, as well as the desired and actual end effector positions.
+<figure figcaption align="center">
+  <img src="Images/EAIK_wsb_plot.png"/>
+</figure>
+
+#### Experiment 2
+
+For the second experiment, we induce a slight offset to the trajectory from Experiment 1 along the y-axis.
+The new trajectory starts with the end-effector position (x, y, z) = (0m, −0.001m, 0.5m), reaches to the
+position (x, y, z) = (0m, −0.001m, 1.0m) and goes back to (x, y, z) = (0m, −0.001m, 0.5m). Again, we sample
+100 equidistant points from this trajectory and try to compute IK solutions via both IKFast and our method
+(EAIK). <br>
+
+Just like in the first experiment, every point on the trajectory with z ≤ 0.8m can be reached by the manipulator. This time, however, all these points are reachable in non-singular configurations. Therefore, there exists
+only a finite set of IK solutions to each such point. For these points, both IKFast and our method yield the same solutions, which are accurate up to the expected floating-point precision.
+
+
+For all points where z > 0.8m, no IK solution exists. However, in real-world situations, values that lie exactly on the workspace boundary can not be perfectly separated from those that lie beyond it. 
+E.g., due to floating-point inaccuracies, a desired set-point of 0.8m may be represented as 0.8m + ϵ where 1 >> ϵ > 0. In these cases, IKFast again returns no solution at all. Our method, on the other hand, returns an IK solution that resembles the least-squares solution to the underlying subproblems. The error between the desired and actual error in the end-effector position is often negligible in such cases. These properties make the solutions returned by the subproblems in [Elias et al.](#credits), and thus the solutions provided by our method, consistent and stable even across workspace boundaries. 
+
+**As the offset induced in the y-direction is quite small (1mm), the trajectory plot (and also the animation) of our method's performance in this experiment is indistinguishable by the human eye from the plot in the first experiment. We therefore refrain from plotting the same figures again and refer the reader to the visualizations in the prior experiment.**
+
+The following animation shows a simplified LWA-4P model that executes the IK solutions obtained via IKFast for the trajectory in Experiment 2. Blue arrows resemble the joint axes of the manipulator, while the pink bars resemble its links.
+Green points represent the commanded positions while exiting the workspace, while red points represent the commanded positions when re-entering the manipulator's workspace (100 points in total).
+**If no feasible solution is obtained from the IK solver, the model disappears.**
+
+<figure figcaption align="center">
+  <img width="60%" src="Images/IKFast_wsb_animation.gif"/>
+</figure>
+
+IKFast fails to yield any solution when commanding positions outside the workspace or if the robot is in a singular configuration. 
+The joint trajectories, as well as the commanded and executed end-effector positions, are displayed in the graphs above.
+
+The trajectories resulting from IKFast are displayed in the plot below. Once the manipulator reaches its workspace boundary, IKFast returns no solution—the joint trajectories become discontinuous in this part of the plot.
+<figure figcaption align="center">
+  <img src="Images/IKFast_wsb_plot.png"/>
+</figure>
 
 ## Performance
 >**_NOTE:_** All of the following experiments were conducted on a computer with an AMD Ryzen 7 8-core processor and 64GB of DDR4 memory within Ubuntu 22.04.
