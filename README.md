@@ -34,13 +34,13 @@ This software is available via our [Open-Source Implementation](https://github.c
 
 <figure figcaption align="center">
   <img align="center" width="70%" src="Images/Titlefigure.png"/>
-  <figcaption>A robot with a spherical wrist and the geometric representation of a
-subproblem we use to solve parts of its IK. Red points indicate a unit offset
-along the corresponding joint axes from the intersection point. The circles
-represent rotations of these offset vectors about the joint axes 4 and 5 by
-the solution angles θ4,5 and θ′
-4,5, which are determined by the intersection
-points of the two circles (black dots).
+  <figcaption>A fictitious robot is shown in a desired pose. We solve its IK by decomposing it into pre-solved
+subproblems with geometric meaning. One subproblem is visualized here. The desired rotation induced by
+the last three joints is denoted 3^R_6. Joint axes are denoted h4, h5, h6. Red points indicate a unit offset along
+the corresponding joint axis (dashed lines) from the point where the axes intersect—the center of a spherical
+wrist. The grey and blue circles represent full rotations of these offsets about the joint axes 4 and 5. The
+desired angles θ_4, θ_5 and θ′_
+4, θ′_5 are determined by the intersections of the circles (black dots).
   </figcaption>
 </figure>
 
@@ -109,18 +109,18 @@ $ make
 We currently provide support parametrizing a robot via DH parameters, homogeneous transformations of each joint in zero-pose with respect to the basis, as well as [ROS URDF](http://wiki.ros.org/urdf) files.
 Some quick examples that demonstrate the usability of our implementation are shown in the following code-snippets:
 
-#### URDF
+#### DH Parameters
 ```python
 import numpy as np
-from eaik.IK_DH import Robot
+from eaik.IK_DH import DhRobot
 
 """
 Example DH parametrization + forward kinematics for a random robot kinematic
 """
 
-d = np.array([0, 0, 0, 0.56426215, 0.31625527, 0])
-alpha = np.array([np.pi/2, -np.pi/2, 0, np.pi/2, np.pi/2, 0])
-a = np.array([0, 0.6766692, 0.93924826, 0.99652755, 0, 0.9355382])
+d = np.array([0.67183, 0.13970, 0, 0.43180, 0, 0.0565])
+alpha = np.array([-np.pi/2, 0, np.pi/2, -np.pi/2, np.pi/2, 0])
+a = np.array([0,0.43180, -0.02032, 0,0,0])
 bot = Robot(alpha, a, d)
 
 print(bot.hasKnownDecomposition())
@@ -132,15 +132,16 @@ print(bot.fwdKin(np.array([1,1,1,1,1,1])))
 ```python
 import numpy as np
 import random
-from eaik.IK_URDF import Robot
+from eaik.IK_URDF import UrdfRobot
 import evaluate_ik as eval
+
 
 def urdf_example(path, batch_size):
     """
     Loads spherical-wrist robot from urdf, calculates IK using subproblems and checks the solution for a certian batch size
     """
 
-    bot = Robot(path)
+    bot = UrdfRobot(path)
 
     # Example desired pose
     test_angles = []
@@ -161,10 +162,10 @@ def urdf_example(path, batch_size):
             pose_fwd = bot.fwdKin(Q)
             print(pose_fwd)
 ```
-Even more examples for the python interface are available [here](https://github.com/:pub-eaik/pub-eaik/tree/main/src/eaik/examples).
+Even more examples for the python interface are available [here](https://github.com/pub-eaik/pub-eaik/tree/main/examples).
 
 #### Using the C++ Library
-The example below is just a small code snipped. As the C++ code quickly becomes more evolved, we recommend to look into the [Software Tests](https://github.com/pub-eaik/pub-eaik/EAIK/tree/main/CPP/Tests) we wrote for the C++ side. 
+The example below is just a small code snipped. As the C++ code quickly becomes more evolved, we recommend to look into the [Software Tests](https://github.com/pub-eaik/pub-eaik/tree/main/CPP/Tests) we wrote for the C++ side. 
 The code there can also be used as an example on how you can use our library in a bigger project that, e.g., requires checks for least-square solutions etc.
 
 ```C
@@ -309,11 +310,8 @@ Besides IKFast, we also list the computation times on the numerical Gauss-Newton
 (GN) and Levenberg-Marquard (LM) solvers implemented
 in the [Python Robotics Toolbox](https://github.com/petercorke/robotics-toolbox-python). 
 
-The following figure shows a comparison of the IK computation times of above-mentioned manipulators on 5,000 randomly assigned end effector poses (left) and the batch-times
-on 10,000 random (analytically solvable) manipulators (right). The measured times in (left) correspond to a single solution for the numerical approaches and
-the set of all possible solutions for EAIK and IKFast, respectively. In the right image, we additionally include derivation times and only show our method along the
-numerical ones, as the derivation time of IKFast deemed it unfeasible for this task. Our method shows the smallest overall variance and, except for the
-Puma robot, consistently surpasses all other methods.
+The following figure shows a comparison of the IK computation times of six representative manipulators on 5,000 randomly assigned end-effector poses (left) and the batch-times
+on 10,000 random (analytically solvable) 6R manipulators (right). The measured times in (left) correspond to a single solution for the numerical approaches—which we marked with an asterisk—and the set of all possible solutions for EAIK, IKFast, and the method by [He et al.](#credits) respectively. In (left), we additionally include derivation times and only show our method along the numerical ones, as the derivation times of IKFast are too long for this task to finish within a reasonable time. Our method shows the smallest overall variance and, except for the Puma and Panda robot, consistently surpasses all other methods.
 <figure figcaption align="center">
   <img src="Images/Computation_Times.png"/>
   <figcaption></figcaption>
@@ -354,7 +352,7 @@ IKFlow makes use of, which leads to less diverse solutions.
 
 The following figure shows the just mentioned values for the Panda robot, as well as the position and orientation errors that different methods resulted for non-redundant UR5 robot. 
 <figure figcaption align="center">
-  <img src="Images/Panda_UR5.png"/>
+  <img src="Images/panda_ur5_error.png"/>
   <figcaption>Computation times and position error for the Panda robot, as well as the UR5. The dashed red lines
 indicates the repeatability precision of the robot according to its datasheet.</figcaption>
 </figure>
@@ -393,6 +391,10 @@ vol. 7, no. 3, 2022.
 P. Corke and J. Haviland, “Not your grandmother’s toolbox–the
 robotics toolbox reinvented for Python,” in Proc. of the IEEE Int.
 Conf. on Robotics and Automation (ICRA), 2021, pp. 11 357–11 363
+
+Y. He and S. Liu, “Analytical inverse kinematics for Franka Emika
+Panda – a geometrical solver for 7-DOF manipulators with un-
+conventional design,” in Proc. of the IEEE Int. Conf. on Control, Mechatronics and Automation (ICCMA), 2021, pp. 194–199
 
 B. Efron. "Better Bootstrap Confidence Intervals". Journal of the American Statistical Association. Vol. 82, No. 397: 171–185, 1987
 
